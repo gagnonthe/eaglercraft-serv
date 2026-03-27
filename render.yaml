@@ -15,6 +15,5 @@ services:
         value: /
       - key: EAGLER_ALLOWED_ORIGIN
         value: '*'
-      # Optionnel: lien direct vers ton jar si tu veux le télécharger au boot
-      # - key: EAGLER_JAR_URL
-      #   value: https://example.com/server.jar
+      - key: EAGLER_JAR_URL
+        sync: false

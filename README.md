@@ -35,8 +35,8 @@ Pour limiter les coûts:
 ## Déploiement rapide
 
 1. Mets ton `server.jar` (EaglerXBungee ou autre compatible 1.8) :
-   - soit via `EAGLER_JAR_URL` dans Render (recommandé en Free)
-   - soit en l'incluant dans l'image Docker (moins flexible)
+   - via `EAGLER_JAR_URL` dans Render (recommandé en Free)
+   - ou en l'incluant dans l'image Docker (moins flexible)
 
 2. Au premier boot, des templates Eagler sont copiés automatiquement si absents:
    - `/data/plugins/EaglercraftXBungee/listeners.yml`
@@ -66,7 +66,7 @@ Pour limiter les coûts:
 ## Variables utiles
 
 - `JAVA_OPTS` : mémoire Java (`-Xms512M -Xmx1024M` par défaut)
-- `EAGLER_JAR_URL` : URL de téléchargement du jar (optionnel)
+- `EAGLER_JAR_URL` : URL de téléchargement du jar (obligatoire en pratique sur Free si le jar n'est pas dans l'image)
 - `BIND_HOST` : host d'écoute (défaut `0.0.0.0`)
 - `SERVER_NAME` : nom affiché dans la conf template
 - `EAGLER_WS_PATH` : chemin websocket public (défaut `/`)
@@ -76,7 +76,6 @@ Pour limiter les coûts:
 
 - Si le service ne démarre pas: vérifie que le jar existe et est valide.
 - Si connexion impossible: vérifie que le listener est bien en `0.0.0.0:<PORT>` et que le client utilise `wss://`.
-- Si reset après redéploiement: assure-toi d'utiliser le disque `/data`.
 - En Free, les fichiers locaux sont éphémères: privilégie une source externe (URL de jar) ou un service payant si tu veux persister localement.
 - Si le plugin régénère ses propres fichiers, adapte les placeholders dans les fichiers sous `/data/plugins/EaglercraftXBungee/`.
 

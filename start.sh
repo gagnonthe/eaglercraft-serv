@@ -43,8 +43,8 @@ else
     JAR_PATH="/data/server.jar"
   else
     echo "[error] server.jar introuvable."
-    echo "[hint] Ajoute ton jar EaglerXBungee sous /data/server.jar (disque persistant Render)"
-    echo "[hint] ou définis EAGLER_JAR_URL dans les variables d'environnement Render."
+    echo "[hint] Définis EAGLER_JAR_URL dans les variables d'environnement Render (mode recommandé en plan Free)."
+    echo "[hint] Exemple: https://ton-hebergeur.exemple/EaglerXBungee.jar"
     exit 1
   fi
 fi
