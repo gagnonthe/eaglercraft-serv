@@ -38,6 +38,21 @@ Pour limiter les coûts:
    - via `EAGLER_JAR_URL` dans Render (recommandé en Free)
    - ou en l'incluant dans l'image Docker (moins flexible)
 
+### Important: `EaglerXServer.jar` vs serveur exécutable
+
+- Le dépôt `lax1dude/eaglerxserver` fournit surtout des **plugins** (`EaglerXServer.jar`, etc.).
+- Un plugin n'est pas un serveur autonome `java -jar`.
+- Pour un setup simple, utilise `EAGLER_TEMPLATE_ZIP_URL` avec un template serveur complet.
+
+Valeur prête à l'emploi (template Paper + plugins):
+
+- `EAGLER_TEMPLATE_ZIP_URL=https://github.com/Eaglercraft-Templates/Eaglercraft-Server-Paper/archive/refs/heads/main.zip`
+
+Si tu veux quand même le plugin seul (depuis releases):
+
+- `https://github.com/lax1dude/eaglerxserver/releases/latest`
+- Asset principal: `EaglerXServer.jar`
+
 2. Au premier boot, des templates Eagler sont copiés automatiquement si absents:
    - `/data/plugins/EaglercraftXBungee/listeners.yml`
    - `/data/plugins/EaglercraftXBungee/settings.yml`
@@ -67,10 +82,12 @@ Pour limiter les coûts:
 
 - `JAVA_OPTS` : mémoire Java (`-Xms512M -Xmx1024M` par défaut)
 - `EAGLER_JAR_URL` : URL de téléchargement du jar (obligatoire en pratique sur Free si le jar n'est pas dans l'image)
+- `EAGLER_TEMPLATE_ZIP_URL` : URL d'un zip de serveur complet (recommandé pour setup no-code)
 - `BIND_HOST` : host d'écoute (défaut `0.0.0.0`)
 - `SERVER_NAME` : nom affiché dans la conf template
 - `EAGLER_WS_PATH` : chemin websocket public (défaut `/`)
 - `EAGLER_ALLOWED_ORIGIN` : placeholder d'origine autorisée si utilisé
+- `ACCEPT_EULA` : `true` pour générer `eula.txt` automatiquement
 
 ## Dépannage
 

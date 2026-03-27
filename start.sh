@@ -6,10 +6,12 @@ BIND_HOST="${BIND_HOST:-0.0.0.0}"
 SERVER_NAME="${SERVER_NAME:-EaglerCraft Render}"
 EAGLER_WS_PATH="${EAGLER_WS_PATH:-/}"
 EAGLER_ALLOWED_ORIGIN="${EAGLER_ALLOWED_ORIGIN:-*}"
+ACCEPT_EULA="${ACCEPT_EULA:-true}"
 
 APP_DIR="/app"
 DATA_DIR="/data"
 TEMPLATE_DIR="${APP_DIR}/templates/eaglerxbungee"
+SERVER_WORKDIR="${DATA_DIR}"
 
 echo "[boot] Render bind: ${BIND_HOST}:${PORT}"
 echo "[boot] Server name: ${SERVER_NAME}"
@@ -36,13 +38,36 @@ if [ -f "/data/server.jar" ]; then
 elif [ -f "/app/server.jar" ]; then
   JAR_PATH="/app/server.jar"
 else
-  if [ -n "${EAGLER_JAR_URL:-}" ]; then
+  if [ -n "${EAGLER_TEMPLATE_ZIP_URL:-}" ]; then
+    echo "[boot] Downloading server template zip from EAGLER_TEMPLATE_ZIP_URL..."
+    TMP_ZIP="${DATA_DIR}/server-template.zip"
+    rm -f "$TMP_ZIP"
+    mkdir -p "${DATA_DIR}/server-dist"
+    curl -fsSL "$EAGLER_TEMPLATE_ZIP_URL" -o "$TMP_ZIP"
+    rm -rf "${DATA_DIR}/server-dist"/*
+    unzip -oq "$TMP_ZIP" -d "${DATA_DIR}/server-dist"
+
+    FOUND_JAR="$(find "${DATA_DIR}/server-dist" -type f -name 'paper-*.jar' | head -n 1 || true)"
+    if [ -z "$FOUND_JAR" ]; then
+      FOUND_JAR="$(find "${DATA_DIR}/server-dist" -type f -name '*.jar' | head -n 1 || true)"
+    fi
+
+    if [ -z "$FOUND_JAR" ]; then
+      echo "[error] Aucun jar exécutable trouvé dans le template téléchargé."
+      exit 1
+    fi
+
+    JAR_PATH="$FOUND_JAR"
+    SERVER_WORKDIR="$(dirname "$FOUND_JAR")"
+    echo "[boot] Template server jar: $JAR_PATH"
+  elif [ -n "${EAGLER_JAR_URL:-}" ]; then
     echo "[boot] Downloading server jar from EAGLER_JAR_URL..."
     mkdir -p /data
     curl -fsSL "$EAGLER_JAR_URL" -o /data/server.jar
     JAR_PATH="/data/server.jar"
   else
     echo "[error] server.jar introuvable."
+    echo "[hint] Option simple: définis EAGLER_TEMPLATE_ZIP_URL vers un zip de serveur complet (ex: Eaglercraft-Server-Paper)."
     echo "[hint] Définis EAGLER_JAR_URL dans les variables d'environnement Render (mode recommandé en plan Free)."
     echo "[hint] Exemple: https://ton-hebergeur.exemple/EaglerXBungee.jar"
     exit 1
@@ -72,11 +97,18 @@ for CFG in $CFG_FILES; do
   fi
 done
 
-# Use /data as working dir when available so plugin/database files persist
-if [ -w "${DATA_DIR}" ]; then
+# Use server workdir when available
+if [ -d "${SERVER_WORKDIR}" ] && [ -w "${SERVER_WORKDIR}" ]; then
+  cd "${SERVER_WORKDIR}"
+elif [ -w "${DATA_DIR}" ]; then
   cd "${DATA_DIR}"
 else
   cd "${APP_DIR}"
+fi
+
+if [ "${ACCEPT_EULA}" = "true" ]; then
+  echo "eula=true" > "${PWD}/eula.txt"
+  echo "[boot] eula.txt generated (eula=true)"
 fi
 
 JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms512M -Xmx1024M}"

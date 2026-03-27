@@ -15,5 +15,9 @@ services:
         value: /
       - key: EAGLER_ALLOWED_ORIGIN
         value: '*'
+      - key: ACCEPT_EULA
+        value: 'true'
       - key: EAGLER_JAR_URL
+        sync: false
+      - key: EAGLER_TEMPLATE_ZIP_URL
         sync: false
