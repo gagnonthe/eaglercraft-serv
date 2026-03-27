@@ -43,8 +43,11 @@ elif [ -f "/app/server.jar" ]; then
   JAR_PATH="/app/server.jar"
 else
   if [ -n "${EAGLER_TEMPLATE_ZIP_URL:-}" ]; then
-    FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name 'paper-*.jar' | head -n 1 || true)"
-    if [ -z "$FOUND_JAR" ]; then
+    FOUND_JAR=""
+    if [ -d "${TEMPLATE_EXTRACT_DIR}" ]; then
+      FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name 'paper-*.jar' | head -n 1 || true)"
+    fi
+    if [ -z "$FOUND_JAR" ] && [ -d "${TEMPLATE_EXTRACT_DIR}" ]; then
       FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name '*.jar' | head -n 1 || true)"
     fi
 
@@ -162,7 +165,8 @@ JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms64M -Xmx256M -XX:+UseSerialGC}"
 
 if [ "${USE_PORT_PROXY}" = "true" ]; then
   echo "[boot] Starting TCP proxy ${BIND_HOST}:${PORT} -> 127.0.0.1:${INTERNAL_SERVER_PORT}"
-  socat TCP-LISTEN:${PORT},bind=${BIND_HOST},reuseaddr,fork TCP:127.0.0.1:${INTERNAL_SERVER_PORT} &
+  echo "[boot] Proxy note: des refus temporaires sont normaux avant la fin du boot Paper"
+  socat TCP-LISTEN:${PORT},bind=${BIND_HOST},reuseaddr,fork TCP:127.0.0.1:${INTERNAL_SERVER_PORT} 2>/dev/null &
 fi
 
 echo "[boot] Starting: $JAR_PATH"
