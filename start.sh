@@ -79,10 +79,7 @@ else
       rm -rf "${SERVER_WORKDIR}/plugins/AuthMe" || true
       rm -f "${SERVER_WORKDIR}/plugins/AuthMe.jar" || true
       rm -f "${SERVER_WORKDIR}/plugins/SkinsRestorer.jar" || true
-      rm -f "${SERVER_WORKDIR}/plugins/ViaVersion.jar" || true
-      rm -f "${SERVER_WORKDIR}/plugins/ViaBackwards.jar" || true
-      rm -f "${SERVER_WORKDIR}/plugins/ViaRewind.jar" || true
-      rm -f "${SERVER_WORKDIR}/plugins/ViaRewind-Legacy-Support.jar" || true
+      # Keep Via* plugins for Eagler 1.8 compatibility on Paper 1.12.2
       rm -f "${SERVER_WORKDIR}/plugins/EaglerXRewind.jar" || true
     fi
   elif [ -n "${EAGLER_JAR_URL:-}" ]; then
