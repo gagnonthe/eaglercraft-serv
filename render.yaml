@@ -6,7 +6,7 @@ services:
     autoDeployTrigger: commit
     envVars:
       - key: JAVA_OPTS
-        value: -Xms128M -Xmx384M
+        value: -Xms64M -Xmx256M -XX:+UseSerialGC
       - key: BIND_HOST
         value: 0.0.0.0
       - key: SERVER_NAME
@@ -17,6 +17,10 @@ services:
         value: '*'
       - key: ACCEPT_EULA
         value: 'true'
+      - key: USE_PORT_PROXY
+        value: 'true'
+      - key: INTERNAL_SERVER_PORT
+        value: '25565'
       - key: EAGLER_JAR_URL
         sync: false
       - key: EAGLER_TEMPLATE_ZIP_URL

@@ -7,6 +7,8 @@ SERVER_NAME="${SERVER_NAME:-EaglerCraft Render}"
 EAGLER_WS_PATH="${EAGLER_WS_PATH:-/}"
 EAGLER_ALLOWED_ORIGIN="${EAGLER_ALLOWED_ORIGIN:-*}"
 ACCEPT_EULA="${ACCEPT_EULA:-true}"
+USE_PORT_PROXY="${USE_PORT_PROXY:-true}"
+INTERNAL_SERVER_PORT="${INTERNAL_SERVER_PORT:-25565}"
 
 APP_DIR="/app"
 DATA_DIR="/data"
@@ -84,22 +86,29 @@ else
   fi
 fi
 
-# If a Paper/Spigot-style server.properties exists, bind it to Render's host/port
+# If a Paper/Spigot-style server.properties exists, bind it to configured port
 SERVER_PROPERTIES_FILE="${SERVER_WORKDIR}/server.properties"
 if [ -f "${SERVER_PROPERTIES_FILE}" ]; then
+  TARGET_PORT="${PORT}"
+  TARGET_HOST="${BIND_HOST}"
+  if [ "${USE_PORT_PROXY}" = "true" ]; then
+    TARGET_PORT="${INTERNAL_SERVER_PORT}"
+    TARGET_HOST="127.0.0.1"
+  fi
+
   if grep -q '^server-port=' "${SERVER_PROPERTIES_FILE}"; then
-    sed -i "s/^server-port=.*/server-port=${PORT}/" "${SERVER_PROPERTIES_FILE}"
+    sed -i "s/^server-port=.*/server-port=${TARGET_PORT}/" "${SERVER_PROPERTIES_FILE}"
   else
-    echo "server-port=${PORT}" >> "${SERVER_PROPERTIES_FILE}"
+    echo "server-port=${TARGET_PORT}" >> "${SERVER_PROPERTIES_FILE}"
   fi
 
   if grep -q '^server-ip=' "${SERVER_PROPERTIES_FILE}"; then
-    sed -i "s/^server-ip=.*/server-ip=${BIND_HOST}/" "${SERVER_PROPERTIES_FILE}"
+    sed -i "s/^server-ip=.*/server-ip=${TARGET_HOST}/" "${SERVER_PROPERTIES_FILE}"
   else
-    echo "server-ip=${BIND_HOST}" >> "${SERVER_PROPERTIES_FILE}"
+    echo "server-ip=${TARGET_HOST}" >> "${SERVER_PROPERTIES_FILE}"
   fi
 
-  echo "[boot] Patched server.properties: ${BIND_HOST}:${PORT}"
+  echo "[boot] Patched server.properties: ${TARGET_HOST}:${TARGET_PORT}"
 fi
 
 # Prepare candidate config files (Bungee + EaglerXBungee + generic)
@@ -139,7 +148,12 @@ if [ "${ACCEPT_EULA}" = "true" ]; then
   echo "[boot] eula.txt generated (eula=true)"
 fi
 
-JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms128M -Xmx384M}"
+JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms64M -Xmx256M -XX:+UseSerialGC}"
+
+if [ "${USE_PORT_PROXY}" = "true" ]; then
+  echo "[boot] Starting TCP proxy ${BIND_HOST}:${PORT} -> 127.0.0.1:${INTERNAL_SERVER_PORT}"
+  socat TCP-LISTEN:${PORT},bind=${BIND_HOST},reuseaddr,fork TCP:127.0.0.1:${INTERNAL_SERVER_PORT} &
+fi
 
 echo "[boot] Starting: $JAR_PATH"
 # -Dserver.port peut être ignoré par certains jars (normal)
