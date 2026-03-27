@@ -1,0 +1,32 @@
+# Template EaglerXBungee pour Render
+# Ce fichier est copié vers /data/plugins/EaglercraftXBungee/listeners.yml au premier démarrage
+
+listeners:
+  - name: "__SERVER_NAME__"
+    address: "__BIND_HOST__:__PORT__"
+    max_players: 200
+    tab_list: GLOBAL_PING
+    default_server: lobby
+    force_default_server: false
+    force_motd: "Welcome on __SERVER_NAME__"
+
+    # Côté client, utilise l'URL publique Render en WSS:
+    # wss://<ton-service>.onrender.com__WS_PATH__
+
+    allow_motd: true
+    allow_query: true
+    allow_command_block: false
+    allow_voice: false
+
+    # Important pour Render / reverse proxy
+    trusted_proxies:
+      - "*"
+
+    # Built-in HTTP server optionnel (sert index.html si tu veux)
+    http_server:
+      enabled: false
+      root: "web"
+
+    # Optionnel selon versions/plugin build
+    # allowed_origins:
+    #   - "__ALLOWED_ORIGIN__"

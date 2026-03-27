@@ -1,0 +1,13 @@
+# Template EaglerXBungee authservice.yml (Render)
+# Mode online/offline se gère aussi via ton config Bungee/Waterfall principal.
+
+auth_service:
+  enabled: true
+  timeout_seconds: 120
+
+database:
+  driver_path: "sqlite"
+  driver_class: "org.sqlite.JDBC"
+  uri: "jdbc:sqlite:/data/eagler-auth.db"
+
+# Tu peux migrer vers MySQL via JDBC si besoin.

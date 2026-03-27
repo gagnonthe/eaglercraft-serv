@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: eaglercraft-18-server
+    runtime: docker
+    plan: starter
+    autoDeployTrigger: commit
+    envVars:
+      - key: JAVA_OPTS
+        value: -Xms512M -Xmx1024M
+      - key: BIND_HOST
+        value: 0.0.0.0
+      - key: SERVER_NAME
+        value: EaglerCraft Render
+      - key: EAGLER_WS_PATH
+        value: /
+      - key: EAGLER_ALLOWED_ORIGIN
+        value: '*'
+      # Optionnel: lien direct vers ton jar si tu veux le télécharger au boot
+      # - key: EAGLER_JAR_URL
+      #   value: https://example.com/server.jar
+    disk:
+      name: eagler-data
+      mountPath: /data
+      sizeGB: 1

@@ -1,0 +1,11 @@
+# Runtime
+logs/
+*.log
+
+# Local jars
+server.jar
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

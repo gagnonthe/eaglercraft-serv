@@ -1,0 +1,15 @@
+# Template EaglerXBungee settings.yml (Render)
+
+download_vanilla_skins_to_clients: false
+disable_voice_chat_on_servers: []
+disable_fnaw_skins_on_servers: []
+
+auth_ratelimit:
+  player_limit_per_minute: 5
+  global_limit_per_minute: 300
+
+# Exemple SQLite persistant dans /data
+skin_database:
+  driver_path: "sqlite"
+  driver_class: "org.sqlite.JDBC"
+  uri: "jdbc:sqlite:/data/eagler-skins.db"
