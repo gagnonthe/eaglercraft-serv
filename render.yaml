@@ -2,7 +2,7 @@ services:
   - type: web
     name: eaglercraft-18-server
     runtime: docker
-    plan: starter
+    plan: free
     autoDeployTrigger: commit
     envVars:
       - key: JAVA_OPTS
@@ -18,7 +18,3 @@ services:
       # Optionnel: lien direct vers ton jar si tu veux le télécharger au boot
       # - key: EAGLER_JAR_URL
       #   value: https://example.com/server.jar
-    disk:
-      name: eagler-data
-      mountPath: /data
-      sizeGB: 1
