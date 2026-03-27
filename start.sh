@@ -9,6 +9,7 @@ EAGLER_ALLOWED_ORIGIN="${EAGLER_ALLOWED_ORIGIN:-*}"
 ACCEPT_EULA="${ACCEPT_EULA:-true}"
 USE_PORT_PROXY="${USE_PORT_PROXY:-true}"
 INTERNAL_SERVER_PORT="${INTERNAL_SERVER_PORT:-25565}"
+MINIMAL_TEMPLATE="${MINIMAL_TEMPLATE:-true}"
 
 APP_DIR="/app"
 DATA_DIR="/data"
@@ -72,6 +73,18 @@ else
     JAR_PATH="$FOUND_JAR"
     SERVER_WORKDIR="$(dirname "$FOUND_JAR")"
     echo "[boot] Template server jar: $JAR_PATH"
+
+    if [ "${MINIMAL_TEMPLATE}" = "true" ]; then
+      echo "[boot] Applying minimal plugin profile for low-memory instance"
+      rm -rf "${SERVER_WORKDIR}/plugins/AuthMe" || true
+      rm -f "${SERVER_WORKDIR}/plugins/AuthMe.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/SkinsRestorer.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/ViaVersion.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/ViaBackwards.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/ViaRewind.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/ViaRewind-Legacy-Support.jar" || true
+      rm -f "${SERVER_WORKDIR}/plugins/EaglerXRewind.jar" || true
+    fi
   elif [ -n "${EAGLER_JAR_URL:-}" ]; then
     echo "[boot] Downloading server jar from EAGLER_JAR_URL..."
     mkdir -p /data

@@ -88,6 +88,7 @@ Si tu veux quand même le plugin seul (depuis releases):
 - `EAGLER_WS_PATH` : chemin websocket public (défaut `/`)
 - `EAGLER_ALLOWED_ORIGIN` : placeholder d'origine autorisée si utilisé
 - `ACCEPT_EULA` : `true` pour générer `eula.txt` automatiquement
+- `MINIMAL_TEMPLATE` : `true` pour retirer les plugins lourds du template (recommandé en Free)
 
 ## Dépannage
 
@@ -95,6 +96,7 @@ Si tu veux quand même le plugin seul (depuis releases):
 - Si connexion impossible: vérifie que le listener est bien en `0.0.0.0:<PORT>` et que le client utilise `wss://`.
 - En Free, les fichiers locaux sont éphémères: privilégie une source externe (URL de jar) ou un service payant si tu veux persister localement.
 - Si le plugin régénère ses propres fichiers, adapte les placeholders dans les fichiers sous `/data/plugins/EaglercraftXBungee/`.
+- Si tu as `Handshake timed out`, active `MINIMAL_TEMPLATE=true` et attends la fin complète du boot (premier démarrage plus long).
 
 ---
 

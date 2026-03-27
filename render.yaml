@@ -21,6 +21,8 @@ services:
         value: 'true'
       - key: INTERNAL_SERVER_PORT
         value: '25565'
+      - key: MINIMAL_TEMPLATE
+        value: 'true'
       - key: EAGLER_JAR_URL
         sync: false
       - key: EAGLER_TEMPLATE_ZIP_URL
