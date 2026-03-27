@@ -12,6 +12,7 @@ APP_DIR="/app"
 DATA_DIR="/data"
 TEMPLATE_DIR="${APP_DIR}/templates/eaglerxbungee"
 SERVER_WORKDIR="${DATA_DIR}"
+TEMPLATE_EXTRACT_DIR="${DATA_DIR}/server-dist"
 
 echo "[boot] Render bind: ${BIND_HOST}:${PORT}"
 echo "[boot] Server name: ${SERVER_NAME}"
@@ -39,17 +40,26 @@ elif [ -f "/app/server.jar" ]; then
   JAR_PATH="/app/server.jar"
 else
   if [ -n "${EAGLER_TEMPLATE_ZIP_URL:-}" ]; then
-    echo "[boot] Downloading server template zip from EAGLER_TEMPLATE_ZIP_URL..."
-    TMP_ZIP="${DATA_DIR}/server-template.zip"
-    rm -f "$TMP_ZIP"
-    mkdir -p "${DATA_DIR}/server-dist"
-    curl -fsSL "$EAGLER_TEMPLATE_ZIP_URL" -o "$TMP_ZIP"
-    rm -rf "${DATA_DIR}/server-dist"/*
-    unzip -oq "$TMP_ZIP" -d "${DATA_DIR}/server-dist"
-
-    FOUND_JAR="$(find "${DATA_DIR}/server-dist" -type f -name 'paper-*.jar' | head -n 1 || true)"
+    FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name 'paper-*.jar' | head -n 1 || true)"
     if [ -z "$FOUND_JAR" ]; then
-      FOUND_JAR="$(find "${DATA_DIR}/server-dist" -type f -name '*.jar' | head -n 1 || true)"
+      FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name '*.jar' | head -n 1 || true)"
+    fi
+
+    if [ -z "$FOUND_JAR" ]; then
+      echo "[boot] Downloading server template zip from EAGLER_TEMPLATE_ZIP_URL..."
+      TMP_ZIP="${DATA_DIR}/server-template.zip"
+      rm -f "$TMP_ZIP"
+      mkdir -p "${TEMPLATE_EXTRACT_DIR}"
+      curl -fsSL "$EAGLER_TEMPLATE_ZIP_URL" -o "$TMP_ZIP"
+      rm -rf "${TEMPLATE_EXTRACT_DIR}"/*
+      unzip -oq "$TMP_ZIP" -d "${TEMPLATE_EXTRACT_DIR}"
+
+      FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name 'paper-*.jar' | head -n 1 || true)"
+      if [ -z "$FOUND_JAR" ]; then
+        FOUND_JAR="$(find "${TEMPLATE_EXTRACT_DIR}" -type f -name '*.jar' | head -n 1 || true)"
+      fi
+    else
+      echo "[boot] Reusing extracted template server"
     fi
 
     if [ -z "$FOUND_JAR" ]; then
@@ -72,6 +82,24 @@ else
     echo "[hint] Exemple: https://ton-hebergeur.exemple/EaglerXBungee.jar"
     exit 1
   fi
+fi
+
+# If a Paper/Spigot-style server.properties exists, bind it to Render's host/port
+SERVER_PROPERTIES_FILE="${SERVER_WORKDIR}/server.properties"
+if [ -f "${SERVER_PROPERTIES_FILE}" ]; then
+  if grep -q '^server-port=' "${SERVER_PROPERTIES_FILE}"; then
+    sed -i "s/^server-port=.*/server-port=${PORT}/" "${SERVER_PROPERTIES_FILE}"
+  else
+    echo "server-port=${PORT}" >> "${SERVER_PROPERTIES_FILE}"
+  fi
+
+  if grep -q '^server-ip=' "${SERVER_PROPERTIES_FILE}"; then
+    sed -i "s/^server-ip=.*/server-ip=${BIND_HOST}/" "${SERVER_PROPERTIES_FILE}"
+  else
+    echo "server-ip=${BIND_HOST}" >> "${SERVER_PROPERTIES_FILE}"
+  fi
+
+  echo "[boot] Patched server.properties: ${BIND_HOST}:${PORT}"
 fi
 
 # Prepare candidate config files (Bungee + EaglerXBungee + generic)
@@ -111,7 +139,7 @@ if [ "${ACCEPT_EULA}" = "true" ]; then
   echo "[boot] eula.txt generated (eula=true)"
 fi
 
-JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms512M -Xmx1024M}"
+JAVA_OPTS_VALUE="${JAVA_OPTS:--Xms128M -Xmx384M}"
 
 echo "[boot] Starting: $JAR_PATH"
 # -Dserver.port peut être ignoré par certains jars (normal)

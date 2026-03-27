@@ -6,7 +6,7 @@ services:
     autoDeployTrigger: commit
     envVars:
       - key: JAVA_OPTS
-        value: -Xms512M -Xmx1024M
+        value: -Xms128M -Xmx384M
       - key: BIND_HOST
         value: 0.0.0.0
       - key: SERVER_NAME
