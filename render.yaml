@@ -20,4 +20,4 @@ services:
       - key: EAGLER_JAR_URL
         sync: false
       - key: EAGLER_TEMPLATE_ZIP_URL
-        sync: false
+        value: https://github.com/Eaglercraft-Templates/Eaglercraft-Server-Paper/archive/refs/heads/main.zip
